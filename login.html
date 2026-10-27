@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hoshi Studio — Admin Login</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #fafafa;
+      font-family: Arial, sans-serif;
+      color: #161616;
+    }
+    main {
+      width: min(400px, 92%);
+      padding: 30px;
+      background: white;
+      border: 1px solid #eee;
+      border-radius: 14px;
+    }
+    h1 { font-size: 25px; }
+    p { color: #666; }
+    label {
+      display: block;
+      margin: 20px 0 8px;
+    }
+    input, button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 7px;
+      font-size: 15px;
+    }
+    input { border: 1px solid #ccc; }
+    button {
+      margin-top: 16px;
+      border: 0;
+      background: #111;
+      color: white;
+      cursor: pointer;
+    }
+    #message { color: #c00; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Hoshi Studio</h1>
+    <p>Admin Dashboard Login</p>
+
+    <form id="loginForm">
+      <label for="password">Admin Password</label>
+      <input
+        id="password"
+        type="password"
+        autocomplete="current-password"
+        required
+      >
+      <button type="submit">Log In</button>
+      <p id="message" role="alert"></p>
+    </form>
+  </main>
+
+  <script>
+    document.querySelector('#loginForm').addEventListener(
+      'submit', async (event) => {
+        event.preventDefault();
+
+        const message = document.querySelector('#message');
+        const button = event.target.querySelector('button');
+        button.disabled = true;
+        message.textContent = 'Checking password...';
+
+        try {
+          const response = await fetch('/api/admin/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({
+              password: document.querySelector('#password').value
+            })
+          });
+
+          if (!response.ok) {
+            message.textContent = 'Incorrect password. Please try again.';
+            return;
+          }
+
+          window.location.href = '/admin.html';
+        } catch {
+          message.textContent = 'Connection error. Please try again.';
+        } finally {
+          button.disabled = false;
+        }
+      }
+    );
+  </script>
+</body>
+</html>
