@@ -41,6 +41,9 @@ http.createServer(async (req,res) => {
   if (pathname === '/api/admin/products' && req.method === 'GET') { if(needsLogin(req,res))return;return send(res,200,read(productsFile,[])); }
   if (pathname === '/api/admin/products' && req.method === 'POST') { if(needsLogin(req,res))return;const body=await parse(req),all=read(productsFile,[]);const product={id:body.id||crypto.randomUUID(),name:body.name||'Untitled product',category:body.category||'Jewellery',price:Number(body.price)||0,image:body.image||'',description:body.description||'',badge:body.badge||'NEW',active:body.active!==false};const index=all.findIndex(p=>p.id===product.id);if(index<0)all.unshift(product);else all[index]=product;save(productsFile,all);return send(res,200,product); }
   if (pathname.startsWith('/api/admin/products/') && req.method === 'DELETE') { if(needsLogin(req,res))return;const id=pathname.split('/').pop();save(productsFile,read(productsFile,[]).filter(p=>p.id!==id));return send(res,200,{ok:true}); }
-  if (pathname === '/api/admin/orders' && req.method === 'GET') { if(needsLogin(req,res))return send(res,200,read(ordersFile,[])); }
+ if (pathname === '/api/admin/orders' && req.method === 'GET') {
+  if (needsLogin(req, res)) return;
+  return send(res, 200, read(ordersFile, []));
+}
   const target=pathname==='/' ? path.join(root,'index.html') : path.join(root,pathname);if(!target.startsWith(root)){res.writeHead(403);return res.end();}staticFile(res,target);
 }).listen(port, '0.0.0.0', ()=>console.log(`Hoshi Studio: http://localhost:${port}`));
